@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: bash -c "python manage.py collectstatic --noinput && gunicorn my_django_app.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - static_volume:/app/hello/static
+    ports:
+      - 8000:8000
+    expose:
+      - 8000
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/hello/static/
+    ports:
+      - 1337:80
+      - 80:80
+    expose:
+      - 1337
+      - 80
+    depends_on:
+      - web
+      
+volumes:
+  postgres_data:
+  static_volume:
